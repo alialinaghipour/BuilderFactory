@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutputPath>bin\Release\net8.0</OutputPath>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <IsPackable>true</IsPackable>
+        <Version>1.0.0</Version>
+        <PackageId>BuilderFactory</PackageId>
+        <PackageTags>builder, factory, object-creation, builder-factory-utility</PackageTags>
+        <Authors>ali alinaghipour</Authors>
+        <Description>A lightweight and versatile builder factory utility for code generation and object creation in .NET applications.</Description>
+        <Repository>https://github.com/alialinaghipour/BuilderFactory</Repository>
+        <RepositoryUrl>https://github.com/alialinaghipour/BuilderFactory</RepositoryUrl>
+        <LicenseUrl>https://opensource.org/licenses/MIT</LicenseUrl>
+        <PackageProjectUrl>https://github.com/alialinaghipour/BuilderFactory</PackageProjectUrl>
+        <PackageDescription>A lightweight and versatile builder factory utility for code generation and object creation in .NET applications.</PackageDescription>
+
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+        <OutputPath>bin\Release\net6.0</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net7.0'">
+        <OutputPath>bin\Release\net7.0</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+        <OutputPath>bin\Release\net8.0</OutputPath>
+    </PropertyGroup>
+
+</Project>
