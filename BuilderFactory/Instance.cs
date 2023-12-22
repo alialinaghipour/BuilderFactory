@@ -1,44 +1,44 @@
 ﻿namespace BuilderFactory;
 
-public static class BuilderFactory
+public static class Instance
 {
-    public static BuilderFactory<T> Create<T>() where T : new()
+    public static Instance<T> From<T>() where T : new()
     {
-        return new BuilderFactory<T>();
+        return new Instance<T>();
     }
 
-    public static BuilderFactory<T> Create<T>(params object[] parameters)
+    public static Instance<T> From<T>(params object[] parameters)
     {
-        return new BuilderFactory<T>(parameters);
+        return new Instance<T>(parameters);
     }
 
-    public static BuilderFactory<T> Create<T>(Func<T> instanceCreator)
+    public static Instance<T> From<T>(Func<T> instanceCreator)
     {
-        return new BuilderFactory<T>(instanceCreator);
+        return new Instance<T>(instanceCreator);
     }
 }
 
-public class BuilderFactory<T>
+public class Instance<T>
 {
     private readonly T _instance;
 
-    public BuilderFactory()
+    public Instance()
     {
         _instance = CreateInstance();
     }
 
-    public BuilderFactory(params object[] parameters)
+    public Instance(params object[] parameters)
     {
         ValidateConstructor(parameters);
         _instance = CreateInstance(parameters);
     }
 
-    public BuilderFactory(Func<T> instanceCreator)
+    public Instance(Func<T> instanceCreator)
     {
         _instance = instanceCreator.Invoke();
     }
 
-    public BuilderFactory<T> SetProperty(Action<T>? propertySetter)
+    public Instance<T> SetProperty(Action<T>? propertySetter)
     {
         propertySetter?.Invoke(_instance);
         return this;

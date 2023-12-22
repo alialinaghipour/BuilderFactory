@@ -5,7 +5,7 @@ public class BuilderFactoryTests
     [Fact]
     public void Create_InstanceWithDefaultConstructor_ShouldCreateInstance()
     {
-        var factoryBuilder = BuilderFactory.Create<Person>();
+        var factoryBuilder = Instance.From<Person>();
 
         var result = factoryBuilder.Build();
 
@@ -16,7 +16,7 @@ public class BuilderFactoryTests
     [Theory,AutoData]
     public void CanBuildInstanceWithDefaultConstructor(string name,int age)
     {
-        var factoryBuilder = BuilderFactory.Create<Person>()
+        var factoryBuilder = Instance.From<Person>()
             .SetProperty(p=>p.Name = name)
             .SetProperty(p=>p.Age = age);
 
@@ -30,7 +30,7 @@ public class BuilderFactoryTests
     [Theory,AutoData]
     public void Create_WithParameters_ShouldCreateInstance(int id,string name)
     {
-        var factoryBuilder = BuilderFactory.Create<Book>(name, id); 
+        var factoryBuilder = Instance.From<Book>(name, id); 
 
         var result = factoryBuilder.Build();
 
@@ -43,7 +43,7 @@ public class BuilderFactoryTests
     [Theory,AutoData]
     public void Create_WithInstanceCreator_ShouldCreateInstance(string name,int id)
     {
-        var factoryBuilder = BuilderFactory.Create(() => new Book(name, id));
+        var factoryBuilder = Instance.From(() => new Book(name, id));
 
         var result = factoryBuilder.Build();
 
@@ -52,13 +52,13 @@ public class BuilderFactoryTests
     }
 }
 
-public class Person
+internal class Person
 {
     public string? Name { get; set; }
     public int Age { get; set; }
 }
 
-public class Book
+internal class Book
 {
     public Book(string name,int id)
     {
