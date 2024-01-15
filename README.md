@@ -18,13 +18,14 @@ var person = Instance.From<Person>()
     .SetProperty(p => p.Age = 30)
     .Build();
 
-// with contractor
-var book = Instance.From<Book>(name, id).Build();
-//or
-var book = Instance.From(() => new Book(name, id)).Build();
+// Automatic property filling based on class properties
+var configuredPerson = Instance.From<Person>(isDefaultValuesSet: true)
+// or
+var configuredPerson = Instance.From<Person>()
 ```
 
 ## Features
 - Fluent and readable object creation
-- Easy property setting and constructor management
+- Automatic constructor and property management (introduced in version 1.0.3)
+- Automatic property filling based on class properties (introduced in version 1.0.3)
 - Compatible with the Builder pattern in C#
