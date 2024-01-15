@@ -1,30 +1,41 @@
-﻿namespace BuilderFactory;
+﻿using System.Reflection;
+
+namespace BuilderFactory;
 
 public static class Instance
 {
-    public static Instance<T> From<T>() where T : new()
+    public static Instance<T> From<T>(bool isDefaultValuesSet = true) 
     {
-        return new Instance<T>();
-    }
-
-    public static Instance<T> From<T>(params object[] parameters)
-    {
-        return new Instance<T>(parameters);
-    }
-
-    public static Instance<T> From<T>(Func<T> instanceCreator)
-    {
-        return new Instance<T>(instanceCreator);
+        return new Instance<T>(isDefaultValuesSet);
     }
 }
 
 public class Instance<T>
 {
     private readonly T _instance;
+    private bool _isDefaultValuesSet;
 
-    public Instance()
+    public Instance(bool isDefaultValuesSet)
     {
-        _instance = CreateInstance();
+        _isDefaultValuesSet = isDefaultValuesSet;
+        _instance = CreateInstanceUsingAlternativeMethod();
+        
+        if (_isDefaultValuesSet)
+        {
+            SetDefaultPropertyValues();
+        }
+    }
+
+    private void SetDefaultPropertyValues()
+    {
+        foreach (var property in typeof(T).GetProperties())
+        {
+            if (property.CanWrite)
+            {
+                object value = RandomValueGenerator.GetRandomValue(property.PropertyType);
+                property.SetValue(_instance, value);
+            }
+        }
     }
 
     public Instance(params object[] parameters)
@@ -33,14 +44,28 @@ public class Instance<T>
         _instance = CreateInstance(parameters);
     }
 
-    public Instance(Func<T> instanceCreator)
+    public Instance(bool isDefaultValuesSet, params object[] parameters)
     {
+        _isDefaultValuesSet = isDefaultValuesSet;
+        ValidateConstructor(parameters);
+        _instance = CreateInstance(parameters);
+    }
+
+    public Instance(Func<T> instanceCreator, bool isDefaultValuesSet)
+    {
+        _isDefaultValuesSet = isDefaultValuesSet;
         _instance = instanceCreator.Invoke();
     }
 
     public Instance<T> SetProperty(Action<T>? propertySetter)
     {
         propertySetter?.Invoke(_instance);
+        return this;
+    }
+
+    public Instance<T> WithSetDefaultValues(bool value = true)
+    {
+        _isDefaultValuesSet = value;
         return this;
     }
 
@@ -83,7 +108,7 @@ public class Instance<T>
         }
 
         if (parameters.Length == 0) return;
-        
+
         var suitableConstructors = constructors.Where(ctor =>
             ctor.GetParameters().Length == parameters.Length &&
             ctor.GetParameters().Zip(parameters, (p, arg) => p.ParameterType.IsInstanceOfType(arg))
@@ -95,4 +120,32 @@ public class Instance<T>
                 $"No suitable constructors found for type {typeof(T).Name} with the given parameters.");
         }
     }
+    
+    private T CreateInstanceUsingAlternativeMethod()
+    {
+        ConstructorInfo[] constructors = typeof(T).GetConstructors();
+
+        foreach (ConstructorInfo constructor in constructors)
+        {
+            ParameterInfo[] parameters = constructor.GetParameters();
+
+            object[] parameterValues = new object[parameters.Length];
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                parameterValues[i] = RandomValueGenerator.GetRandomValue(parameters[i].ParameterType);
+            }
+
+            try
+            {
+                return (T)constructor.Invoke(parameterValues);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating instance: {ex.Message}");
+            }
+        }
+
+        return default(T)!;
+    }
+
 }
